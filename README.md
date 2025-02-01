@@ -1,7 +1,3 @@
-Below is an example `README.md` file you can use for your GitHub repository. You can customize the content as needed.
-
----
-
 # Mixture of Experts (MoE) with PyTorch
 
 This repository provides a simple implementation of a Mixture-of-Experts (MoE) architecture using PyTorch. The code demonstrates how to combine multiple expert networks with a gating mechanism to dynamically select or weight the contributions of each expert during inference.
@@ -96,8 +92,8 @@ print("Output:", output)
 1. **Clone the Repository:**
 
    ```bash
-   git clone https://github.com/your-username/your-moe-repo.git
-   cd your-moe-repo
+   git clone https://github.com/khushwant04/mixture-of-experts.git
+   cd mixture-of-experts
    ```
 
 2. **Install Dependencies:**
@@ -109,7 +105,7 @@ print("Output:", output)
    Execute the script to see the MoE layer in action:
 
    ```bash
-   python moe.py
+   python model.py
    ```
 
 ## Future Work
