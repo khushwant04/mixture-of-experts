@@ -2,7 +2,7 @@
 
 This repository provides a simple implementation of a Mixture-of-Experts (MoE) architecture using PyTorch. The code demonstrates how to combine multiple expert networks with a gating mechanism to dynamically select or weight the contributions of each expert during inference.
 
-![Hexel Studio](Hexel Studio.png)
+![Mixture of Experts Architecture](image/01_moe_layer.png)
 
 ## Table of Contents
 
