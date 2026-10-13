@@ -15,6 +15,7 @@ This repository provides a simple implementation of a Mixture-of-Experts (MoE) a
 - [Usage](#usage)
 - [Running the Code](#running-the-code)
 - [Future Work](#future-work)
+- [References](#references)
 - [License](#license)
 
 ## Overview
@@ -37,9 +38,9 @@ This approach helps in managing model capacity by enabling specialization and po
 
 ### Expert Networks
 
-Each expert in our implementation is a simple feedforward network with two linear layers:
-- **First layer:** Transforms the input features to a hidden representation and applies a ReLU activation.
-- **Second layer:** Processes the hidden representation to produce an output of the specified dimension.
+Each expert (`Expert` in `model.py`) is a simple feedforward network with two linear layers:
+- **First layer (`fc1`):** Maps `input_dim -> output_dim` and applies a ReLU activation.
+- **Second layer (`fc2`):** Maps `output_dim -> output_dim` to produce the expert output.
 
 ### Gating Network
 
@@ -54,7 +55,12 @@ Optionally, the MoE layer can perform **top-K selection**:
 - Instead of using all expert outputs, only the top-K experts (based on the gating scores) are considered.
 - The gating weights for all other experts are set to zero, ensuring that only the contributions from the most relevant experts are aggregated.
 
-This mechanism is useful to improve efficiency and promote specialization.
+Implementation notes:
+- The kept top-K weights are the original softmax probabilities; they are not renormalized to sum to 1.
+- Every expert is still evaluated on every input, and the non-selected experts are multiplied by zero.
+  Top-K therefore sparsifies the *mixture weights* but does not save compute. A sparse MoE would
+  dispatch each input only to its selected experts.
+- There is no auxiliary load-balancing loss.
 
 ## Usage
 
@@ -68,7 +74,7 @@ Below is an example of how to instantiate and use the MoE layer:
 
 ```python
 import torch
-from moe import MoELayer  # Ensure your module is imported correctly
+from model import MoELayer  # run from the repository root
 
 # Define input and output dimensions
 input_dim = 10
@@ -98,11 +104,15 @@ print("Output:", output)
 
 2. **Install Dependencies:**
 
-   Ensure you have Python and PyTorch installed. You can install PyTorch following the instructions from the [official website](https://pytorch.org/).
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+   Or install PyTorch following the instructions on the [official website](https://pytorch.org/).
 
 3. **Run the Example:**
 
-   Execute the script to see the MoE layer in action:
+   `model.py` has a `__main__` block that runs the example above (8 samples, 4 experts, top-2):
 
    ```bash
    python model.py
@@ -116,11 +126,18 @@ Some ideas for further improvement include:
 - **Regularization Techniques:** Incorporate regularization strategies such as load balancing to encourage equal usage of experts.
 - **Scalability:** Explore sparse MoE implementations where only a few experts are active per input to improve computational efficiency.
 
+## References
+
+- Jacobs, Jordan, Nowlan, Hinton, *Adaptive Mixtures of Local Experts*, Neural Computation 3(1), 1991.
+- Shazeer et al., *Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer*, 2017. [arXiv:1701.06538](https://arxiv.org/abs/1701.06538)
+- Lepikhin et al., *GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding*, 2020. [arXiv:2006.16668](https://arxiv.org/abs/2006.16668)
+- Fedus, Zoph, Shazeer, *Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity*, 2021. [arXiv:2101.03961](https://arxiv.org/abs/2101.03961)
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-Feel free to open issues or submit pull requests if you have suggestions or improvements. Happy coding!
+Feel free to open issues or submit pull requests if you have suggestions or improvements.
 
